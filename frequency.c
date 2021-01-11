@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-
+#include <ctype.h>
 
 #define NUM_LETTERS ((int)26)
 #define LINE 256
@@ -28,10 +28,10 @@ node* newNode(char c){
 }
 
 
-void insert(struct node *head, char* str)
+void insert(node *head, char* str)
 {
     // start from root node
-    struct node* p = head;
+    node* p = head;
     int end = strlen(str);
     for(int i =0;i<end;i++){
         char c=*(str+i);
@@ -49,70 +49,86 @@ void insert(struct node *head, char* str)
 }
 
 
-/*
-void printAll(struct node *root){  
-    for(int j=0;j<26;j++){
-        char st[]="" ;
-        printAllRec(root->children[j],st);
-    }
+
+void display(node *root, char str[], int level) { 
+    if (root->flag)  { 
+        str[level] = '\0'; 
+        printf("%s %d\n",str , root->count);
+    } 
+  
+    for (int i = 0; i < NUM_LETTERS; i++)  {  
+        if (root->children[i])  { 
+            str[level] = i + 'a'; 
+            display(root->children[i], str, level + 1); 
+        } 
+    } 
+} 
+
+
+void displayR(node *root, char str[], int level) { 
+    if (root->flag)  { 
+        str[level] = '\0'; 
+        printf("%s %d\n",str , root->count);
+    }  
+  
+    for (int i = NUM_LETTERS-1; i >= 0; i--)  {  
+        if (root->children[i])  { 
+            str[level] = i + 'a'; 
+            displayR(root->children[i], str, level + 1); 
+        } 
+    } 
 
 }
-*/
-void printAllRec(struct node *root, char* s,int level){
-    //printf("%d \n", level);
-    if(root==NULL)
-        return;
-    char c = root->letter;
-    if(c!='!'){
-       strncat(s, &c,1); 
-    }
-    
-    
-    if(root->flag){
-        printf("%s %d\n",s, root->count);
 
-        s[level]='\0';
-        level++;       
-    }
-    
-    for(int j=0;j<26;j++)
-        printAllRec(root->children[j],s,level);
 
-    
+void trieFree(node *root){
+    if(root != NULL){
+        for(int i = 0; i < NUM_LETTERS; i++){
+            if(root->children[i] != NULL){
+                trieFree(root->children[i]);
+            }
+        }
+        free(root);
+    }
 }
 
-
-int main(){
+int main(int argc, char const *argv[]){
     char buffer[LINE];
-    //int len = 0;
-    struct node* root = newNode('!');
+    node* root = newNode('!');
 
     while(fgets(buffer, LINE, stdin) != NULL){
-        printf("%s\n",buffer);
         int end = strlen(buffer);
         for(int j=0; j < end; j++){
             char c [LINE];
             int i = 0;
-            while(*(buffer+j) >= 'a'&&*(buffer+j) <= 'z'){
-                c[i] = *(buffer+j);
+            while((*(buffer+j) >= 'a'&&*(buffer+j) <= 'z')||(*(buffer+j) >= 'A'&&*(buffer+j) <= 'Z')){
+                char tempLow = tolower(*(buffer+j));
+                c[i] = tempLow;
                 j++;
                 i++;
             }
-
             while(*(buffer+j) < 'a'||*(buffer+j) > 'z'){
                 j++;
             }
             j--;
             c[i] = '\0';
             insert(root, c);
-
         }
 
     }
     char st[]="" ;
-    printAllRec(root,st,0);
-
-    free(root);
+    if(argc>1){
+        char strs = argv[1][0];     
+        if(strs == 'r' && strlen(argv[1])==1){
+            displayR(root,st,0);
+        }
+        else
+            printf("%s is a wrong argoment",argv[1]);
+    }
+    else
+        display(root,st,0);
+    
+    trieFree(root);
     return 0;
 }
 
