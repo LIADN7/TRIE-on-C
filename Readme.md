@@ -1,6 +1,9 @@
 **TRIE**
 ----
 
+![](https://github.com/LIADN7/TRIE-on-C/blob/master/img/TRIE.png)
+
+
 This program produces a tree which is obtained from a text file.
 
 **Functions in the program:**
