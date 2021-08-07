@@ -37,6 +37,8 @@ This program produces a tree which is obtained from a text file.
 
 ***
 
+<img src="https://github.com/LIADN7/TRIE-on-C/blob/master/img/Trie.png" width=50% height=50%>
+
 
 **Program process:**
 ----
